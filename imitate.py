@@ -13,6 +13,9 @@ global dataPath
 dataPath = "./data/imitate"
 global newJson
 newJson = {}
+global sentenceSize
+sentenceSize = 280
+
 class imitate:
     """Uses Markovify to imitate users"""
     def __init__(self, bot):
@@ -50,8 +53,8 @@ class imitate:
         with open(dataPath + '/' + userID + '.txt', 'r') as file:
             try:
                 jsonData = json.load(file)
-                model = markovify.NewlineText.from_json(jsonData)
-                await self.bot.say(model.make_short_sentence(140))
+                model = markovify.NewlineText.from_json(str(jsonData))
+                await self.bot.say(model.make_short_sentence(sentenceSize))
             except ValueError:
                 print("ERROR: imitate: Could not get markov model from user JSON file!")
                 await self.bot.say("ERROR: imitate: Could not get markov model from user JSON file!")
