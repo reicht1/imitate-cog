@@ -27,8 +27,6 @@ class imitate:
         if os.path.exists(dataPath + '/' + userID + '.txt'):
             return True
         else:
-            with open(dataPath + '/' + userID + '.txt', 'w+') as file:
-                json.dump(newJson, file, indent=4)
             return False
     
     @commands.command(pass_context=True, no_pm=True)		
