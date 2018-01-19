@@ -62,8 +62,8 @@ class imitate:
             except KeyError:
                 await self.bot.say("User does not have any information about them yet.")
      
-    async def on_message(self, message):
-        #print(message.author.name + ": " + message.content + '\n')
+    async def on_message_create(self, message):
+        print(message.author.name + ": " + message.content + '\n')
         
         content = message.content
         userID = message.author.id
@@ -96,7 +96,9 @@ class imitate:
             json.dump(markovJson, file, indent=4)
         
         #have this at the end so the bot will continue to process commands
-        await self.bot.process_commands(message)
+        #await self.bot.process_commands(message)
 
 def setup(bot):
-    bot.add_cog(imitate(bot))
+    cogToLoad = imitate(bot)
+    bot.add_listener(cogToLoad.on_message_create, "on_message")
+    bot.add_cog(cogToLoad)
