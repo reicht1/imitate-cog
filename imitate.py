@@ -14,7 +14,7 @@ dataPath = "./data/imitate"
 global newJson
 newJson = {}
 global sentenceSize
-sentenceSize = 280
+sentenceSize = 140
 
 class imitate:
     """Uses Markovify to imitate users"""
@@ -46,6 +46,7 @@ class imitate:
             return
         userID = user.id
         
+        #Can't use any info about a user if it doesn't exist
         if await self.profileExists(userID) is False:
             await self.bot.say("User does not have any information about them yet.")
             return
@@ -54,7 +55,17 @@ class imitate:
             try:
                 jsonData = json.load(file)
                 model = markovify.NewlineText.from_json(str(jsonData))
-                await self.bot.say(model.make_short_sentence(sentenceSize))
+              
+                charsLeft = sentenceSize
+                while charsLeft > 20:
+                    #await self.bot.say(str(charsLeft) + " left")
+                    resultMessage = model.make_short_sentence(charsLeft)
+                    if len(resultMessage) > 0:
+                        await self.bot.say(resultMessage)
+                        charsLeft -= len(resultMessage)
+                    else:
+                        continue
+                #await self.bot.say("Done!")
             except ValueError:
                 print("ERROR: imitate: Could not get markov model from user JSON file!")
                 await self.bot.say("ERROR: imitate: Could not get markov model from user JSON file!")
@@ -96,8 +107,6 @@ class imitate:
         with open(dataPath + '/' + userID + '.txt', 'w+') as file:
             json.dump(markovJson, file, indent=4)
         
-        #have this at the end so the bot will continue to process commands
-        #await self.bot.process_commands(message)
 
 def setup(bot):
     cogToLoad = imitate(bot)
