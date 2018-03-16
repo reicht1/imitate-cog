@@ -39,7 +39,7 @@ class imitate:
         username = " ".join(username)
         currentServer = ctx.message.server
         user = currentServer.get_member_named(username)
-        mentionRegex = r"<@![0-9]*>"
+        mentionRegex = r"<@[!]?[0-9]*>"
         
         #continue only if user actually exists
         if user is None:
@@ -59,6 +59,7 @@ class imitate:
                 model = markovify.NewlineText.from_json(str(jsonData))
                 charsLeft = sentenceSize
                 while charsLeft > 20:
+                    await self.bot.send_typing(ctx.message.channel)
                     resultMessage = model.make_short_sentence(charsLeft)
                     
                     #clean out any mentions that may have found their way in           
@@ -77,6 +78,7 @@ class imitate:
                             resultMessage = resultMessage.replace(foundMention, "[unknown user]")
                     
                     if len(resultMessage) > 0:
+                        print("IMITATE:" + resultMessage)
                         await self.bot.say(resultMessage)
                         charsLeft -= len(resultMessage)
                     else:
@@ -92,7 +94,7 @@ class imitate:
     async def on_message_create(self, message):
         
         content = message.clean_content
-        
+        mentionRegex = r"<@[!]?[0-9]*>"
         userID = message.author.id
         exclusionString = r"^[!?\\\/]" #exclude lines with commands
         
@@ -103,8 +105,7 @@ class imitate:
         if exclude or (content.replace(" ", "") is ""):
             return;
         
-        print(message.author.name + ": " + message.content + '\n')
-        
+        print(message.author.name + ": " + content + '\n')   
         
         #get new model
         if content is not "":
